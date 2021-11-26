@@ -18,8 +18,9 @@
 package org.apache.rocketmq.spark.streaming;
 
 import org.apache.rocketmq.common.message.MessageExt;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +29,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class MessageRetryManagerTest {
     MessageRetryManager messageRetryManager;
     Map<String,MessageSet> cache;
     BlockingQueue<MessageSet> queue;
 
-    @Before
+    @BeforeAll
     public void prepare() {
         cache = new ConcurrentHashMap<>(10);
         queue = new LinkedBlockingDeque<>(10);
@@ -53,48 +51,48 @@ public class MessageRetryManagerTest {
         //ack
         MessageSet messageSet = new MessageSet(data);
         messageRetryManager.mark(messageSet);
-        assertEquals(1, cache.size());
-        assertTrue(cache.containsKey(messageSet.getId()));
+        Assertions.assertEquals(1, cache.size());
+        Assertions.assertTrue(cache.containsKey(messageSet.getId()));
 
         messageRetryManager.ack(messageSet.getId());
-        assertEquals(0, cache.size());
-        assertFalse(cache.containsKey(messageSet.getId()));
+        Assertions.assertEquals(0, cache.size());
+        Assertions.assertFalse(cache.containsKey(messageSet.getId()));
 
 
         //fail need retry: retries < maxRetry
         messageSet = new MessageSet(data);
         messageRetryManager.mark(messageSet);
-        assertEquals(1, cache.size());
-        assertTrue(cache.containsKey(messageSet.getId()));
+        Assertions.assertEquals(1, cache.size());
+        Assertions.assertTrue(cache.containsKey(messageSet.getId()));
 
         messageRetryManager.fail(messageSet.getId());
-        assertEquals(0, cache.size());
-        assertFalse(cache.containsKey(messageSet.getId()));
-        assertEquals(1, messageSet.getRetries());
-        assertEquals(1, queue.size());
-        assertEquals(messageSet, queue.poll());
+        Assertions.assertEquals(0, cache.size());
+        Assertions.assertFalse(cache.containsKey(messageSet.getId()));
+        Assertions.assertEquals(1, messageSet.getRetries());
+        Assertions.assertEquals(1, queue.size());
+        Assertions.assertEquals(messageSet, queue.poll());
 
 
         //fail need not retry: retries >= maxRetry
         messageSet = new MessageSet(data);
         messageRetryManager.mark(messageSet);
         messageRetryManager.fail(messageSet.getId());
-        assertEquals(0, cache.size());
-        assertFalse(cache.containsKey(messageSet.getId()));
+        Assertions.assertEquals(0, cache.size());
+        Assertions.assertFalse(cache.containsKey(messageSet.getId()));
 
         messageRetryManager.mark(messageSet);
         messageRetryManager.fail(messageSet.getId());
-        assertEquals(2, messageSet.getRetries());
+        Assertions.assertEquals(2, messageSet.getRetries());
         messageRetryManager.mark(messageSet);
         messageRetryManager.fail(messageSet.getId());
-        assertEquals(3, messageSet.getRetries());
+        Assertions.assertEquals(3, messageSet.getRetries());
 
-        assertFalse(messageRetryManager.needRetry(messageSet));
+        Assertions.assertFalse(messageRetryManager.needRetry(messageSet));
         messageRetryManager.mark(messageSet);
         messageRetryManager.fail(messageSet.getId());
-        assertEquals(0, cache.size());
-        assertEquals(3, queue.size());
-        assertEquals(messageSet, queue.poll());
+        Assertions.assertEquals(0, cache.size());
+        Assertions.assertEquals(3, queue.size());
+        Assertions.assertEquals(messageSet, queue.poll());
 
 
         //fail: no ack/fail received in ttl
@@ -105,8 +103,8 @@ public class MessageRetryManagerTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        assertEquals(0, cache.size());
-        assertFalse(cache.containsKey(messageSet.getId()));
+        Assertions.assertEquals(0, cache.size());
+        Assertions.assertFalse(cache.containsKey(messageSet.getId()));
 
     }
 }

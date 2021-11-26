@@ -35,9 +35,10 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class RocketMqUtilsTest {
 
     private static int MESSAGE_NUM = 100;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws Exception {
         mockServer.startupServer();
 
@@ -70,7 +71,7 @@ public class RocketMqUtilsTest {
         mockServer.prepareDataTo(TOPIC_DEFAULT, MESSAGE_NUM);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() {
         mockServer.shutdownServer();
     }

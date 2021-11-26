@@ -25,9 +25,10 @@ import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Properties;
 
@@ -38,7 +39,7 @@ public class RocketMQReceiverTest {
     private static final String CONSUMER_GROUP = "wordcount";
     private static final String CONSUMER_TOPIC = "wordcountsource";
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws Exception {
         mockServer.startupServer();
 
@@ -48,7 +49,7 @@ public class RocketMQReceiverTest {
         mockServer.prepareDataTo(CONSUMER_TOPIC, 5);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() {
         mockServer.shutdownServer();
     }
